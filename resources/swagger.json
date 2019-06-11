@@ -1,0 +1,39 @@
+{"paths":
+ {"/oauth/token":
+  {"post": {"operationId": "oauth-token",
+            "summary": "Get a jwt auth token from auth0",
+            "consumes": ["application/x-www-form-urlencoded"],
+            "produces": ["application/json"],
+            "parameters": [{"name": "credentials", "in": "body", "required": true, "schema": {"$ref": "#/definitions/Credentials"}}]}},
+
+  "/authorize":
+  {"get": {"operationId": "authorize",
+           "summary": "Get an auth-code from auth0",
+           "parameters": [{"name": "response_type", "in": "query", "type": "string"},
+                          {"name": "client_id", "in": "query", "type": "string"},
+                          {"name": "redirect_uri", "in": "query", "type": "string"},
+                          {"name": "audience", "in": "query", "type": "string", "required": false},
+                          {"name": "client_secret", "in": "query", "type": "string", "required": false},
+                          {"name": "scope", "in": "query", "type": "string", "required": false},
+                          {"name": "state", "in": "query", "type": "string", "required": false}]}},
+
+  "/v2/logout":
+  {"get": {"operationId": "logout", "summary": "Logout from Auth0"}},
+
+  "/api/v2/users-by-email":
+  {"get": {"operationId": "users-by-email",
+           "summary": "Find Auth0 users by email address",
+           "parameters": [{"name": "email", "in": "query", "type": "string", "format": "email"},
+                          {"name": "fields", "in": "query", "type": "array", "collectionFormat": "csv", "items": {"type": "string"}, "required": false},
+                          {"name": "include_fields", "in": "query", "type": "boolean", "required": false}]}}},
+
+ "definitions":
+ {"Credentials":
+  {"type": "object",
+   "properties":
+   {"grant_type": {"type": "string"},
+    "client_id": {"type": "string"},
+    "client_secret": {"type": "string"},
+    "audience": {"type": "string"},
+    "redirect_uri": {"type": "string", "required": false},
+    "code": {"type": "string", "required": false}}}}}
