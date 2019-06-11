@@ -8,7 +8,7 @@
 
 (defn auth0-system []
   (let [config {:swirrl.auth0/client
-                {:swagger-json (io/resource "swagger.json")
+                {:swagger-json (io/resource "swirrl/auth0/swagger.json")
                  :endpoint (env :auth0-domain)
                  :client-id (env :auth0-client-id)
                  :client-secret (env :auth0-client-secret)
@@ -42,7 +42,7 @@
 (deftest auth0-client-api-test
   (testing "User api access"
     (let [config {:swirrl.auth0/client
-                  {:swagger-json (io/resource "swagger.json")
+                  {:swagger-json (io/resource "swirrl/auth0/swagger.json")
                    :endpoint (env :auth0-domain)
                    :client-id (env :auth0-client-id)
                    :client-secret (env :auth0-client-secret)
