@@ -52,23 +52,23 @@
                              :audience aud})
       (:body)))
 
-(defn login-uri [{:keys [client config] :as auth0} state & {:keys [prompt]}]
+(defn login-uri [auth0 state & {:keys [prompt]}]
   (-> {:state state
-       :client_id (:client-id config)
+       :client_id (:client-id auth0)
        :protocol "oauth2"
        :response_type "code"
-       :redirect_uri (:redirect-uri config)
-       :audience (:aud config)
+       :redirect_uri (:redirect-uri auth0)
+       :audience (:aud auth0)
        :scope "openid profile email"}
       (cond-> prompt (assoc :prompt prompt))
       (form-encode)
-      (->> (str (martian/url-for client :authorize) \?))))
+      (->> (str (martian/url-for auth0 :authorize) \?))))
 
-(defn logout-uri [{:keys [client config] :as auth0} api]
+(defn logout-uri [auth0 api]
   (->> {:returnTo (martian/url-for api :login)
-        :client_id (:client-id config)}
+        :client_id (:client-id auth0)}
        (form-encode)
-       (str (martian/url-for client :logout) \?)))
+       (str (martian/url-for auth0 :logout) \?)))
 
 (defn nonce []
   (let [bs (byte-array 32)]
