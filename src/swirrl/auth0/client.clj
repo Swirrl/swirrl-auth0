@@ -117,7 +117,8 @@
 
 (defmethod ig/init-key :swirrl.auth0/client
   [_ {:keys [endpoint swagger-json] :as opts}]
-  (client endpoint (json/parse-string (slurp swagger-json) keyword) opts))
+  (when (and endpoint swagger-json)
+    (client endpoint (json/parse-string (slurp swagger-json) keyword) opts)))
 
 (defmethod ig/init-key :swirrl.auth0/jwk [_ {:keys [endpoint] :as opts}]
   (-> (JwkProviderBuilder. endpoint)
