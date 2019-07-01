@@ -64,8 +64,8 @@
       (form-encode)
       (->> (str (martian/url-for auth0 :authorize) \?))))
 
-(defn logout-uri [auth0 api]
-  (->> {:returnTo (martian/url-for api :login)
+(defn logout-uri [auth0 return-to]
+  (->> {:returnTo return-to
         :client_id (:client-id auth0)}
        (form-encode)
        (str (martian/url-for auth0 :logout) \?)))
