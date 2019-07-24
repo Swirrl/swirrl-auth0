@@ -25,7 +25,19 @@
            "summary": "Find Auth0 users by email address",
            "parameters": [{"name": "email", "in": "query", "type": "string", "format": "email"},
                           {"name": "fields", "in": "query", "type": "array", "collectionFormat": "csv", "items": {"type": "string"}, "required": false},
-                          {"name": "include_fields", "in": "query", "type": "boolean", "required": false}]}}},
+                          {"name": "include_fields", "in": "query", "type": "boolean", "required": false}]}},
+
+  "/api/v2/users":
+  {"get": {"operationId": "users",
+           "summary": "List or search users",
+           "parameters": [{"name": "per_page", "in": "query", "type": "integer", "required": false},
+                          {"name": "page", "in": "query", "type": "integer", "required": false},
+                          {"name": "include_totals", "in": "query", "type": "boolean", "required": false},
+                          {"name": "sort", "in": "query", "type": "string", "required": false},
+                          {"name": "fields", "in": "query", "type": "string", "collectionFormat": "csv", "required": false},
+                          {"name": "include_fields", "in": "query", "type": "boolean", "required": false},
+                          {"name": "q", "in": "query", "type": "string", "required": false},
+                          {"name": "search_engine", "in": "query", "type": "string", "enum": ["v1", "v2", "v3"], "required": false}]}}},
 
  "definitions":
  {"Credentials":
