@@ -38,7 +38,7 @@
                             {:grant-type "client_credentials"
                              :client-id (:client-id auth0)
                              :client-secret (:client-secret auth0)
-                             :audience (:audience auth0)})
+                             :audience (:aud auth0)})
       (:body)))
 
 (defn get-auth-code-token [auth0 auth-code aud]
@@ -112,7 +112,9 @@
                  (if (unauthenticated? response)
                    (-> client set-client-id-token! (recur (dec attempts)))
                    (:body response)))))]
-     (call auth0 1))))
+     (let [api-opts (assoc (:opts auth0) :aud (:api auth0))
+           api-client (->Auth0Client (:martian auth0) api-opts)]
+       (call api-client 1)))))
 
 
 (defmethod ig/init-key :swirrl.auth0/client
