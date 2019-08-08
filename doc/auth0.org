@@ -1,0 +1,445 @@
+#+TITLE: Auth0
+
+* Access Token
+
+  An Access Token is a credential that can be used by an application to access
+  an API.
+
+  They inform the API that the bearer of the token has been authorized to
+  access the API and perform specific actions specified by the scope that has
+  been granted.
+
+  Access Tokens should be used as a Bearer credential and transmitted in an
+  HTTP Authorization header to the API.
+
+  A minimal access token from Auth0 might look like:
+
+#+BEGIN_SRC javascript
+{
+  "iss": "https://example.auth0.com/",
+  "aud": "https://api.example.com/calandar/v1/",
+  "sub": "auth0|5d3ec7c878c1080eea80a588",
+  "scope": "read write",
+  "iat": 1458785796,
+  "exp": 1458872196
+  "azp": "c0XjorYWAryVMINU8bX37ufMTW2OvItT",
+  "gty": "client-credentials"
+}
+#+END_SRC
+
+** Meaning
+
+   - ~iss~ - Issuer identifier (URI)
+   - ~aud~ - Audience identifier (URI)
+   - ~sub~ - Subject (Auth0 user-id/client-id)
+   - ~scope~ - Scopes limit an application's access to a user's account
+   - ~iat~ - Issued at
+   - ~exp~ - Token expiry
+   - ~azp~ - Authorized party - the party to which the ID Token was issued
+   - ~gty~ - Grant type
+
+   The ~sub~ (Auth0 user id) is a bit opaque if we want to display to the user a
+   meaningful "who" is logged in, but if we're not concerned with that, it's a
+   fine identifier.
+
+* ID Token
+
+  The ID Token is a JSON Web Token (JWT) that contains user profile information
+  (including items such as the user's name and email) which is represented in
+  the form of claims. These claims are statements about the user, which can be
+  trusted if the consumer of the token can verify its signature.
+
+  You can get an ID Token for a user after they successfully authenticate.
+
+* API (machine-to-machine) Keys, and Client-ID Tokens
+
+  For each API client, we need a separate machine-to-machine "Application".
+
+  Each "user" of our APIs would need a key of their own.
+
+  For simplicity, all of our services /could/ use the same API key. Only
+  services that need to access either the Auth0 management API, or our other
+  services, outside of a user request, need an API key.
+
+** Scopes
+
+   APIs in Auth0 have customizable "permissions". The ~scope~ is where Auth0
+   puts its "permissions" for _client-id_ access-tokens in space-separated
+   value format.
+
+** Identification
+
+   Tokens retrieved with a machine-to-machine key have no ID Token. The only
+   way (without Auth0 customization) to identify the client is through the ~sub~
+   key, which is of the below format.
+
+#+BEGIN_SRC javascript
+  "sub": "YOUR_MACHINE_TO_MACHINE_APPLICATION_CLIENT_ID@clients",
+#+END_SRC
+
+   This is a unique identifier, but is pretty opaque. It would look something
+   like ~fXGEqpUE9aWRkMYe67cAxW3fNU8heiMt@clients~.
+
+   We want something a bit more informational than this because showing this to
+   a user is meaningless. Tying a client-id to an email address, or a name is
+   likely to be preferred.
+
+   Each M2M application has a "name" text field.
+
+   If we also want to add an email address, or any other metadata, we need to
+   include this information in the machine-to-machine application metadata. This
+   is found in Auth0 in the application's "advanced settings". Arbitrary
+   metadata can be added in key-pairs, up to 10 pairs, and with a maximum
+   character length of 255 each.
+
+#+BEGIN_SRC javascript
+  "email": "some.user@clientname.gov.uk",
+#+END_SRC
+
+   To add the name, and/or this metadata to the access token, Auth0 "Hooks" need
+   to be used.
+
+*** Hooks
+
+    Hooks allow you to customize the behavior of Auth0 with Node.js code that
+    is executed in selected extension points.
+
+    There are different extension points, we need "Client Credentials Exchange".
+
+    These hooks can only access the ~context~ of the machine-to-machine
+    connection, and have no way to access the Auth0 management API, but they can
+    access the metadata of the machine-to-machine application.
+
+    Added fields to the access token *must* be namespaced (or they will be
+    omitted).
+
+#+BEGIN_SRC javascript
+
+// Client Credentials Exchange
+// add-user-info-to-access-token hook
+
+module.exports = function(client, scope, audience, context, callback) {
+  var access_token = {
+    "scope": scope,
+    "https://pmd/user/name": client.name
+  };
+  if (client.metadata) {
+    access_token['https://pmd/user/email'] = client.metadata.email;
+  }
+  callback(null, access_token);
+};
+#+END_SRC
+
+     This would result in client-id access-tokens looking like:
+
+#+BEGIN_SRC bash
+curl -i \
+    -XPOST https\://dev-kkt-m758.eu.auth0.com/oauth/token \
+    -H Content-Type\:\ application/json \
+    -d \{\ \"client_id\"\:\ \"$AUTH0_CLIENT_ID\"'
+      '\,\ \"client_secret\"\:\ \"$AUTH0_CLIENT_SECRET\"'
+      '\,\ \"audience\"\:\ \"https\://pmd\"'
+      '\,\ \"grant_type\"\:\"client_credentials\"'
+      '\}
+#+END_SRC
+
+#+BEGIN_SRC javascript
+{
+  "https://pmd/user/name": "user-api-client",
+  "https://pmd/user/email": "some.user@clientname.gov.uk",
+  "iss": "https://dev-kkt-m758.eu.auth0.com/",
+  "sub": "c0XjorYWAryVMINU8bX37ufMTW2OvItT@clients",
+  "aud": "https://pmd",
+  "iat": 1566316611,
+  "exp": 1566403011,
+  "azp": "c0XjorYWAryVMINU8bX37ufMTW2OvItT",
+  "scope": "drafter:admin",
+  "gty": "client-credentials"
+}
+#+END_SRC
+
+* User (auth-code) tokens
+
+   Access tokens for the auth-code flow _may_ have more information in them, and
+   usually they come paired with an ID token.
+
+#+BEGIN_SRC javascript
+// Access token
+{
+  ...
+  "permissions": ["drafter:editor"],
+  ...
+}
+#+END_SRC
+
+   - ~permissions~ - (Optional) permissions token's user has
+
+   The ~permissions~ field is where Auth0 puts the user "permissions" for
+   auth-code access-tokens in an array of strings.
+
+   The ID token is not something we should be passing along to a backend
+   service, so if we want any backend services to know which user, the access
+   token is for (at least more than a user id), then we need to attach that
+   information to the access token in auth0.
+
+   We use a "Rule" for this
+
+** Rules
+
+   Rules are JavaScript functions that execute when a user authenticates to your
+   application. They run once the authentication process is complete, and you
+   can use them to customize and extend Auth0's capabilities. For security
+   reasons, your Rules code executes isolated from the code of other Auth0
+   tenants in a sandbox.
+
+   Rules do not run for client-id authentication.
+
+   I've read that Hooks will supersede rules, but there is not a hook extension
+   point that is the same as rules at the moment.
+
+#+BEGIN_SRC javascript
+
+// add-user-info-to-access-token rule
+
+function (user, context, callback) {
+  context.accessToken['https://pmd/user/name'] = user.name;
+  context.accessToken['https://pmd/user/email'] = user.email;
+  callback(null, user, context);
+}
+#+END_SRC
+
+** Getting an auth-code token
+   It's pretty tricky to get a token with just ~curl~. You need to follow a
+   bunch of Auth0 redirects, and also login (with js). Instead, below is a bit
+   of Clojure that'll spin up a server where you can login with a browser. Hit
+   ~http://localhost:3000/login~ and login to Auth0. You should see the token(s)
+   logged to the console.
+
+   You can load it into a repl, or just run:
+
+#+BEGIN_SRC bash
+$ clojure -A:dev:test:doc
+#+END_SRC
+
+#+BEGIN_SRC clojure :tangle doc/server.clj
+(ns server
+  (:require [cheshire.core :as json]
+            [clj-http.client :as http]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.session :refer [wrap-session]]
+            [ring.util.codec :refer [form-decode form-encode]])
+  (:import [com.auth0.jwk Jwk JwkProviderBuilder]
+           [com.auth0.jwt JWT JWTDecoder]
+           com.auth0.jwt.algorithms.Algorithm
+           java.security.interfaces.RSAPublicKey
+           java.util.Base64
+           java.util.concurrent.TimeUnit))
+
+(def domain "https://dev-kkt-m758.eu.auth0.com/")
+(def client-id "7klE25HUY333vTEx7rM1dmsnO6vHkaSG")
+(def client-secret "QYoWNwf11dzWNh6XYd3jH8-j5j8r36UKuoFgrPakE_aw_Gy_EwWSppvqSULRICY4")
+(def redirect-uri "http://localhost:3000/auth/callback")
+(def audience "https://pmd")
+
+(defn jwk [uri]
+  (-> (JwkProviderBuilder. uri)
+      (.cached 10 24 TimeUnit/HOURS)
+      (.rateLimited 10 1 TimeUnit/MINUTES)
+      (.build)))
+
+(defn decode-part [s]
+  (-> (.decode (Base64/getDecoder) s)
+      (String. "UTF-8")
+      (json/parse-string keyword)))
+
+(defn decode [jwt]
+  (.decodeJwt (JWT.) jwt))
+
+(defn pub-key [jwt]
+  (-> domain jwk (.get (.getKeyId (decode jwt))) .getPublicKey))
+
+(defn verify-token [jwt audience] ;; throws if not verified
+  (let [key (pub-key jwt)
+        alg (Algorithm/RSA256 key nil)
+        ver (-> (JWT/require alg)
+                (.withIssuer (into-array String [domain]))
+                ;; Ensure iss is correct
+                (.withAudience (into-array String [audience]))
+                ;; Ensure audience is correct
+                (.acceptExpiresAt 0)
+                ;; Ensure token not expired
+                (.build))
+        tok (.verify ver jwt)]
+    {:header (-> tok .getHeader decode-part)
+     :payload (-> tok .getPayload decode-part)}))
+
+(defn get-auth-code-token [auth-code]
+  (http/post (str domain "oauth/token")
+             {:form-params
+              {:grant_type "authorization_code"
+               :code auth-code
+               :client_id client-id
+               :client_secret client-secret
+               :redirect_uri redirect-uri
+               :audience audience}}))
+
+(defn login-uri [state & {:keys [prompt]}]
+  (-> {:state state
+       :client_id client-id
+       :protocol "oauth2"
+       :response_type "code"
+       :redirect_uri redirect-uri
+       :audience audience
+       :scope "openid profile email"}
+      (cond-> prompt (assoc :prompt prompt))
+      (form-encode)
+      (->> (str domain "authorize" \?))))
+
+(defn login-handler [request]
+  (let [bs    (byte-array 32)
+        _     (.nextBytes (java.security.SecureRandom.) bs)
+        state (-> (Base64/getUrlEncoder) .withoutPadding (.encodeToString bs))]
+    {:status 200
+     :headers {"Content-Type" "text/html"}
+     :body (str "<a href=\"" (login-uri state :prompt "none") "\">login</a>")
+     :session {:state state}}))
+
+(defn auth-handler
+  [{{:strs [error code state]} :query-params :as request}]
+  (cond (= error "login_required") ;; user not logged in, or using dev-keys
+        {:status 302
+         :headers {"Location" (login-uri state)}}
+        (= error "consent_required")
+        {:status 302
+         :headers {"Location" (login-uri state :prompt "consent")}}
+        (= error "access_denied")
+        {:status 302
+         :headers {"Location" "/login"}}
+        (= state (-> request :session :state))
+        (let [response (get-auth-code-token code)
+              {:keys [access_token id_token]}
+              (-> (:body response)
+                  (json/parse-string keyword)
+                  (update :access_token verify-token audience)
+                  (update :id_token verify-token client-id))]
+          (println (:body response))
+          (clojure.pprint/pprint access_token)
+          (clojure.pprint/pprint id_token)
+          {:status 200
+           :headers {"Content-Type" "text/plain"}
+           :body "See console"})
+        :else
+        {:status 401 :body "Not authenticated"}))
+
+(defn handler [{:keys [uri] :as request}]
+  (case uri
+    "/login"         (login-handler request)
+    "/auth/callback" (auth-handler  request)
+    {:status 404 :body "Not found."}))
+
+(defonce server (atom nil))
+
+(defonce app
+  (-> handler wrap-params wrap-session))
+
+(require '[ring.adapter.jetty :as jetty])
+
+(defn -main [& args]
+  (jetty/run-jetty #'app {:port 3000 :join? true}))
+
+(comment
+
+  (reset! server (jetty/run-jetty #'app {:port 3000 :join? false}))
+  (.stop @server)
+
+  )
+
+#+END_SRC
+
+* Auth0 Configuration
+
+** Applications
+
+*** PMD: Regular web application
+    This is the web application, meaning anything that a user interacts with
+    using a web browser. (currently muttnik)
+    When a logged-in user makes a request that requires backend APIs the user's
+    access-token is used to gain access to the API.
+
+    Does not need specific access to PMD API, it will use the user's token.
+
+*** PMD: machine-to-machine
+    We can either have one client-id for all services which require access to
+    other backend services, or we can have one client-id per service. The former
+    is simpler in terms of configuration and management. The latter more
+    flexible in terms of which services have access to other services, and what
+    kind of access they have.
+
+    Needs access to PMD API with appropriate permissions.
+
+*** Client/user machine-to-machine application
+    Every user who wants to access one or more API must have their own
+    machine-to-machine application.
+
+    Needs access to PMD API with appropriate permissions.
+
+** APIs
+
+*** PMD
+    We have one "logical" API (in Auth0) that represents all of our backend
+    services. (We have to do this because Auth0 does not support multiple
+    audiences, which would be needed for an access-token to access more than one
+    API smoothly. That means that a logged in user's access-token can only
+    access one API per authentication.  Auth0 suggest using scopes/permissions
+    to further refine access to individual APIs if required.)
+
+**** Permissions
+     Permissions are represented by namespaced strings, the namespace separated
+     by a colon (as per Auth0's recommended style).
+     - ~pmd:admin~
+     - ~pmd:editor~
+     - ~pmd:publisher~
+
+** Management API Access
+
+   Our PMD M2M (machine-to-machine) application needs access to the domain's
+   Management API endpoint, with the ~read:users~ permission for looking up
+   not-logged-in users' roles/permissions.
+
+** Hooks
+*** Client Credentials Exchange
+**** add-user-info-to-access-token (active)
+#+BEGIN_SRC javascript
+/**
+@param {object} client - information about the client
+@param {string} client.name - name of client
+@param {string} client.id - client id
+@param {string} client.tenant - Auth0 tenant name
+@param {object} client.metadata - client metadata
+@param {array|undefined} scope - array of strings representing the scope claim or undefined
+@param {string} audience - token's audience claim
+@param {object} context - additional authorization context
+@param {object} context.webtask - webtask context
+@param {function} callback - function (error, accessTokenClaims)
+*/
+module.exports = function(client, scope, audience, context, callback) {
+  var access_token = {
+    "scope": scope,
+    "https://pmd/user/name": client.name
+  };
+  if (client.metadata) {
+    access_token['https://pmd/user/email'] = client.metadata.email;
+  }
+  callback(null, access_token);
+};
+#+END_SRC
+
+** Rules
+*** add-user-info-to-access-token (active)
+#+BEGIN_SRC javascript
+function (user, context, callback) {
+  context.accessToken['https://pmd/user/name'] = user.name;
+  context.accessToken['https://pmd/user/email'] = user.email;
+  callback(null, user, context);
+}
+#+END_SRC
