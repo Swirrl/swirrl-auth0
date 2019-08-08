@@ -1,0 +1,78 @@
+#+TITLE: Auth0 Requirements
+
+Would it be possible to document what we need to be set up in auth0 for muttnik
+and drafter to work, and what metadata/properties we need the responses from
+auth0 to have etc? (So we can talk to landmark/defra and work out when they need
+to do if they want us to use their auth0 acc) (edited)
+
+* Auth0 Access Token
+
+A bare bones access token might look like:
+
+#+BEGIN_SRC javascript
+{
+  "iss": "https://example.auth0.com/",
+  "aud": "https://api.example.com/calandar/v1/",
+  "sub": "usr_123",
+  "scope": "read write",
+  "permissions": ["drafter:editor"],
+  "iat": 1458785796,
+  "exp": 1458872196
+}
+#+END_SRC
+
+The ~sub~ generally is an Auth0 user id of the form
+~auth0|5d3ec7c878c1080eea80a588~ which might be a bit opaque if we want to
+display to the user "who" is logged in.
+
+** TODO check this: API (client-id/machine-to-machine) Keys
+
+We need one of these for ~drafter~ and one for ~muttnik~.
+
+The ~scope~ is where Auth0 puts its "permissions" for client-id access-tokens in
+space-separated value format
+
+** User (auth-code) tokens
+
+The ~permissions~ is where Auth0 puts the user "permissions" for auth-code
+access-tokens in an array of strings.
+
+** Additions
+
+We can get user info such as email from the id-token for the auth-code flow, but
+the client-id flow does not have an id token so we need some info about the
+"user" the client-id represents. It would be nice to have an ~email~ field here.
+Additions to the client-id flow need to be done in "Hooks" which can only access
+the ~context~ of the machine-to-machine connection.
+
+If we want that ~email~ field, we'll have to put it into the machine-to-machine
+account metadata, and attach it to the access-token in a Hook.
+
+E.G.,
+
+Application Metadata: ~{"email": "blah@blahblahblah.com"}~
+
+*** Hook example
+#+BEGIN_SRC javascript
+module.exports = function(client, scope, audience, context, cb) {
+  var access_token = {};
+  access_token.scope = scope;
+  access_token['email'] = client.metadata.email;
+
+  cb(null, access_token);
+};
+#+END_SRC
+
+* Applications
+  - drafter
+  - muttnik
+  - any API users
+
+* APIs
+  - PMD4 (correct name?)
+
+* Management API Access
+
+  Drafter, and possibly muttnik, need access to the domain's Auth0 Management
+  API endpoint, with the ~read:users~ permission for looking up not-logged-in
+  users' roles/permissions.
