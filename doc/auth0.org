@@ -443,3 +443,20 @@ function (user, context, callback) {
   callback(null, user, context);
 }
 #+END_SRC
+
+** Adding Users
+
+   Users should not be able to sign up, so we disable all social logins, enable
+   only database login, and disable sign up.
+   https://auth0.com/docs/design/creating-invite-only-applications
+
+*** Permissions
+    A user without any permissions can login to Auth0, but will not be
+    authorized by any Application or API. They need at least the lowest level
+    permission to access restricted parts of an Application or API.
+
+*** Activation
+    When a user is created manually (in the Auth0 UI), an email will be sent
+    automatically from Auth0 for verification.
+
+    They will need to be sent to the reset password process (see above link).
