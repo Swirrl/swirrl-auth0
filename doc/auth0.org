@@ -413,6 +413,29 @@ $ clojure -A:dev:test:doc
 
     Auth0 suggest using scopes/permissions instead, to further refine access to
     individual APIs if required.
+    
+    This is just about what a token is authorized for. Ideally, we'd get a token 
+    like:
+    
+#+BEGIN_SRC javascript    
+{
+  ...
+  "audience": ["drafter", "grafter", "api3"],
+  "scope": "admin"
+  ...
+}
+#+END_SRC
+
+    But there's no way to ask for that in auth0. So we do something like
+
+#+BEGIN_SRC javascript
+{
+  ...
+  "audience": ["PMD"],
+  "scope": "drafter:admin grafter api3"
+  ...
+}
+#+END_SRC
 
 **** Permissions
      Permissions are represented by namespaced strings, the namespace separated
