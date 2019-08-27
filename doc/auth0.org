@@ -387,11 +387,32 @@ $ clojure -A:dev:test:doc
 
 *** PMD
     We have one "logical" API (in Auth0) that represents all of our backend
-    services. (We have to do this because Auth0 does not support multiple
-    audiences, which would be needed for an access-token to access more than one
-    API smoothly. That means that a logged in user's access-token can only
-    access one API per authentication.  Auth0 suggest using scopes/permissions
-    to further refine access to individual APIs if required.)
+    services.
+
+    We need to do this because:
+
+     - Auth0 does not support requesting multiple audiences
+     - Each API in Auth0 *must have* a unique identifier (which is the audience
+       for that API).
+
+    So /any/ access token returned from Auth0 will only have *one* of our APIs
+    in the audience field. That means that the token is only authorized for that
+    one API.
+
+    If we want to access more than one API/Application in the same request, we'd
+    have to complete 2 authentications, each with a different audience requested
+    (and therefore have 2 tokens each authorized for a different audience), and
+    then the application calling the APIs/Applications would have to choose
+    which access token to use.
+
+    This becomes really complex if we want to call a "chain" of APIs, E.G., make
+    a request to grafter-server which then calls drafter. Which access token do
+    we put in the ~Bearer~ field? And how do we communicate that grafter-server
+    should use the ~drafter~ token to access drafter? This is not something that
+    OAuth covers.
+
+    Auth0 suggest using scopes/permissions instead, to further refine access to
+    individual APIs if required.
 
 **** Permissions
      Permissions are represented by namespaced strings, the namespace separated
