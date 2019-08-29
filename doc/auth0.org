@@ -51,6 +51,26 @@
 
   You can get an ID Token for a user after they successfully authenticate.
 
+* OAuth/Auth0 Flows
+
+  A "Flow" is a series of steps followed to first authenticate, and then obtain
+  authorization for a user.
+
+  Auth0 uses OpenID Connect (OIDC) and OAuth 2.0 to authenticate users and get
+  their authorization to access protected resources. They support scenarios for
+  server-side, mobile, desktop, client-side, machine-to-machine, and device
+  applications.
+
+  https://auth0.com/docs/flows
+
+  Auth0 supports the following flows:
+
+  - *Authorization Code Flow*: used for server-side web applications
+  - *Authorization Code Flow with Proof Key for Code Exchange (PKCE)*: as above
+  - *Implicit Flow*: used mainly for SPAs (Single Page Apps)
+  - *Client Credentials Flow*: used for API access (machine-to-machine / M2M)
+  - *Device Authorization Flow*: used for mobile/native applications
+
 * API (machine-to-machine) Keys, and Client-ID Tokens
 
   For each API client, we need a separate machine-to-machine "Application".
@@ -413,11 +433,11 @@ $ clojure -A:dev:test:doc
 
     Auth0 suggest using scopes/permissions instead, to further refine access to
     individual APIs if required.
-    
-    This is just about what a token is authorized for. Ideally, we'd get a token 
+
+    This is just about what a token is authorized for. Ideally, we'd get a token
     like:
-    
-#+BEGIN_SRC javascript    
+
+#+BEGIN_SRC javascript
 {
   ...
   "audience": ["drafter", "grafter", "api3"],
