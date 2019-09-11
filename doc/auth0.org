@@ -216,7 +216,7 @@ curl -i \
 
    I've read that Hooks will supersede rules, but there is not a hook extension
    point that is the same as rules at the moment.
-
+   
 #+BEGIN_SRC javascript
 
 // add-user-info-to-access-token rule
@@ -507,6 +507,8 @@ module.exports = function(client, scope, audience, context, callback) {
 };
 #+END_SRC
 
+[[./hooks.png]]
+
 ** Rules
 *** add-user-info-to-access-token (active)
 #+BEGIN_SRC javascript
@@ -516,6 +518,8 @@ function (user, context, callback) {
   callback(null, user, context);
 }
 #+END_SRC
+
+[[./rules.png]]
 
 ** Adding Users
 
