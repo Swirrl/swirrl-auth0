@@ -380,28 +380,33 @@ $ clojure -A:dev:test:doc
 
 ** Applications
 
-*** PMD: Regular web application
+We can either have one client-id for all services which require access to
+other backend services, or we can have one client-id per service. The former
+is simpler in terms of configuration and management. The latter more
+flexible in terms of which services have access to other services, and what
+kind of access they have.
+
+*** Muttnik: Regular web application
     This is the web application, meaning anything that a user interacts with
-    using a web browser. (currently muttnik)
+    using a web browser. 
     When a logged-in user makes a request that requires backend APIs the user's
     access-token is used to gain access to the API.
 
     Does not need specific access to PMD API, it will use the user's token.
-
-*** Muttnik: machine-to-machine
-    We can either have one client-id for all services which require access to
-    other backend services, or we can have one client-id per service. The former
-    is simpler in terms of configuration and management. The latter more
-    flexible in terms of which services have access to other services, and what
-    kind of access they have.
+    (This is why it says unauthorised on the list)
 
     Needs access to PMD API with appropriate permissions.
 
-*** Client machine-to-machine application
+*** Client: machine-to-machine application
     Every client which wants to access one or more API (e.g. an external clojure app which calls drafter) 
     must have their own machine-to-machine application.
 
     Needs access to PMD API with appropriate permissions.
+    
+*** Drafter: machine-to-machine application
+    The application for ~drafter~ needs access to the domain's Management API endpoint, with the ~read:users~ permission
+    for looking up non-logged-in users' roles/permissions. It doesn't need its own permissions against the `PMD` api.
+
 
 ** APIs
 
@@ -465,11 +470,6 @@ $ clojure -A:dev:test:doc
      - ~drafter:editor~
      - ~drafter:publisher~
 
-** Management API Access
-
-   Our PMD M2M (machine-to-machine) application for `drafter` needs access to the domain's
-   Management API endpoint, with the ~read:users~ permission for looking up
-   not-logged-in users' roles/permissions.
 
 ** Hooks
 *** Client Credentials Exchange
