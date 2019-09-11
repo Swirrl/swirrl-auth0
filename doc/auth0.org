@@ -386,6 +386,8 @@ is simpler in terms of configuration and management. The latter more
 flexible in terms of which services have access to other services, and what
 kind of access they have.
 
+[[./PMD-m2m.png]]
+
 *** Muttnik: Regular web application
     This is the web application, meaning anything that a user interacts with
     using a web browser. 
@@ -410,9 +412,14 @@ kind of access they have.
 
 ** APIs
 
+[[./auth0-APIs.png]]
+
 *** PMD
     We have one "logical" API (in Auth0) that represents all of our backend
     services.
+    
+[[./PMD-api-settings.png]]    
+    
 
     We need to do this because:
 
@@ -469,7 +476,8 @@ kind of access they have.
      - ~muttnik:manager~
      - ~drafter:editor~
      - ~drafter:publisher~
-
+     
+[[./PMD-api-permissions.png]]
 
 ** Hooks
 *** Client Credentials Exchange
