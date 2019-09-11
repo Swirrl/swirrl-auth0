@@ -460,13 +460,14 @@ $ clojure -A:dev:test:doc
 **** Permissions
      Permissions are represented by namespaced strings, the namespace separated
      by a colon (as per Auth0's recommended style).
-     - ~pmd:admin~
-     - ~pmd:editor~
-     - ~pmd:publisher~
+     - ~muttnik:admin~
+     - ~muttnik:manager~
+     - ~drafter:editor~
+     - ~drafter:publisher~
 
 ** Management API Access
 
-   Our PMD M2M (machine-to-machine) application needs access to the domain's
+   Our PMD M2M (machine-to-machine) application for `drafter` needs access to the domain's
    Management API endpoint, with the ~read:users~ permission for looking up
    not-logged-in users' roles/permissions.
 
