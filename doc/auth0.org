@@ -388,7 +388,7 @@ $ clojure -A:dev:test:doc
 
     Does not need specific access to PMD API, it will use the user's token.
 
-*** PMD: machine-to-machine
+*** Muttnik: machine-to-machine
     We can either have one client-id for all services which require access to
     other backend services, or we can have one client-id per service. The former
     is simpler in terms of configuration and management. The latter more
@@ -397,9 +397,9 @@ $ clojure -A:dev:test:doc
 
     Needs access to PMD API with appropriate permissions.
 
-*** Client/user machine-to-machine application
-    Every user who wants to access one or more API must have their own
-    machine-to-machine application.
+*** Client machine-to-machine application
+    Every client which wants to access one or more API (e.g. an external clojure app which calls drafter) 
+    must have their own machine-to-machine application.
 
     Needs access to PMD API with appropriate permissions.
 
