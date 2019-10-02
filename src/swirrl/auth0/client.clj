@@ -20,6 +20,9 @@
       :opts opts
       (or (.valAt opts k nil) (.valAt martian k default)))))
 
+(defn client? [x]
+  (instance? Auth0Client x))
+
 (defn client [endpoint swagger {:as opts}]
   (-> endpoint
       (martian/bootstrap-swagger swagger {:interceptors default-interceptors})
