@@ -9,33 +9,17 @@
            java.net.URI
            [java.nio.file Files Paths]))
 
-(defn read-private-key [filename]
-  (let [bytes (Files/readAllBytes (Paths/get (java.net.URI. (str "file://" filename))))
+(defn read-private-key [uri]
+  (let [bytes (Files/readAllBytes (Paths/get uri))
         spec  (java.security.spec.PKCS8EncodedKeySpec. bytes)
         kf    (java.security.KeyFactory/getInstance "RSA")]
     (.generatePrivate kf spec)))
 
-(defn read-public-key [filename]
-  (let [bytes (Files/readAllBytes (Paths/get (java.net.URI. (str "file://" filename))))
+(defn read-public-key [uri]
+  (let [bytes (Files/readAllBytes (Paths/get uri))
         spec  (java.security.spec.X509EncodedKeySpec. bytes)
         kf    (java.security.KeyFactory/getInstance "RSA")]
     (.generatePublic kf spec)))
-
-(defn write-public-key [filename key]
-  (let [file (.getCanonicalPath (io/file filename))
-        path (Paths/get (URI. (str "file://" file)))
-        spec (java.security.spec.X509EncodedKeySpec. (.getEncoded key))]
-    (Files/write path
-                 (.getEncoded spec)
-                 (into-array [java.nio.file.StandardOpenOption/CREATE]))))
-
-(defn write-private-key [filename key]
-  (let [file (.getCanonicalPath (io/file filename))
-        path (Paths/get (URI. (str "file://" file)))
-        spec (java.security.spec.PKCS8EncodedKeySpec. (.getEncoded key))]
-    (Files/write path
-                 (.getEncoded spec)
-                 (into-array [java.nio.file.StandardOpenOption/CREATE]))))
 
 (defn token [pub priv iss aud sub role]
   (let [alg (Algorithm/RSA256 pub priv)]
@@ -53,11 +37,11 @@
       (proxy [Jwk] ["" "" "RSA" "" '() "" '() "" {}]
         (getPublicKey [] public-key)))))
 
-(defmethod ig/init-key :swirrl.auth0.mock/public-key [_ {:keys [filename]}]
-  (read-public-key filename))
+(defmethod ig/init-key :swirrl.auth0.mock/public-key [_ {:keys [resource]}]
+  (read-public-key resource))
 
-(defmethod ig/init-key :swirrl.auth0.mock/private-key [_ {:keys [filename]}]
-  (read-private-key filename))
+(defmethod ig/init-key :swirrl.auth0.mock/private-key [_ {:keys [resource]}]
+  (read-private-key resource))
 
 (defmethod ig/init-key :swirrl.auth0.mock/jwk [_ {:keys [public-key]}]
   (mock-jwk public-key))
