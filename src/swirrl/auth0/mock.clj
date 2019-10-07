@@ -38,10 +38,10 @@
         (getPublicKey [] public-key)))))
 
 (defmethod ig/init-key :swirrl.auth0.mock/public-key [_ {:keys [resource]}]
-  (read-public-key resource))
+  (read-public-key (.toURI resource)))
 
 (defmethod ig/init-key :swirrl.auth0.mock/private-key [_ {:keys [resource]}]
-  (read-private-key resource))
+  (read-private-key (.toURI resource)))
 
 (defmethod ig/init-key :swirrl.auth0.mock/jwk [_ {:keys [public-key]}]
   (mock-jwk public-key))
