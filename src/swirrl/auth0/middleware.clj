@@ -26,9 +26,9 @@
            (second)))
 
 (defn- access-token-request
-  [request access-token jwk iss aud]
+  [request access-token jwk iss aud leeway]
   (if access-token
-    (let [token (jwt/verify-token jwk iss aud access-token)
+    (let [token (jwt/verify-token jwk iss aud leeway access-token)
           status (:status token)]
       (cond-> (assoc request :swirrl.auth0/authenticated status)
         (= ::jwt/token-verified status)
@@ -36,8 +36,8 @@
     request))
 
 (defn- id-token-request
-  [request id-token jwk iss aud]
-  (if-let [token (some->> id-token (jwt/verify-token jwk iss aud))]
+  [request id-token jwk iss aud leeway]
+  (if-let [token (some->> id-token (jwt/verify-token jwk iss aud leeway))]
     (let [status (:status token)]
       (cond-> request
         (= ::jwt/token-verified status)
@@ -45,19 +45,19 @@
     request))
 
 (defmethod ig/init-key :swirrl.auth0.middleware/bearer-token
-  [_ {{:keys [aud iss]} :auth0 :keys [auth0 jwk] :as opts}]
+  [_ {{:keys [aud iss leeway] :or {leeway 0}} :auth0 :keys [auth0 jwk] :as opts}]
   (fn [handler]
     (fn [request]
       (let [token (parse-header request "Bearer")]
-        (handler (access-token-request request token jwk iss aud))))))
+        (handler (access-token-request request token jwk iss aud leeway))))))
 
 (defmethod ig/init-key :swirrl.auth0.middleware/session-token
-  [_ {{:keys [iss aud client-id]} :auth0 :keys [jwk]}]
+  [_ {{:keys [iss aud leeway client-id] :or {leeway 0}} :auth0 :keys [jwk]}]
   (fn [handler]
     (fn [{{{:keys [access_token id_token]} :auth0} :session :as request}]
       (-> request
-          (access-token-request access_token jwk iss aud)
-          (id-token-request id_token jwk iss client-id)
+          (access-token-request access_token jwk iss aud leeway)
+          (id-token-request id_token jwk iss client-id leeway)
           (handler)))))
 
 (defmethod ig/init-key :swirrl.auth0.middleware/normalize-roles

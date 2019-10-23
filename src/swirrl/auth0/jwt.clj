@@ -1,5 +1,6 @@
 (ns swirrl.auth0.jwt
-  (:require [cheshire.core :as json])
+  (:require [cheshire.core :as json]
+            [clojure.tools.logging :as log])
   (:import com.auth0.jwt.algorithms.Algorithm
            [com.auth0.jwt.exceptions InvalidClaimException
             JWTVerificationException TokenExpiredException]
@@ -17,7 +18,7 @@
       (String.  "UTF-8")
       (json/parse-string keyword)))
 
-(defn verify-token [jwk iss aud jwt] ;; throws if not verified
+(defn verify-token [jwk iss aud leeway jwt] ;; throws if not verified
   (try
     (let [key (pub-key jwk jwt)
           alg (Algorithm/RSA256 key nil)
@@ -28,14 +29,21 @@
                   ;; Ensure aud is correct
                   (.acceptExpiresAt 0)
                   ;; Ensure token not expired
+                  (.acceptLeeway leeway)
                   (.build))
           tok (.verify ver jwt)]
       {:status ::token-verified
        :header (-> tok .getHeader decode-part)
        :payload (-> tok .getPayload decode-part)})
     (catch TokenExpiredException e
-      {:status ::token-expired :msg (.getMessage e)})
+      (let [msg (.getMessage e)]
+        (log/warn (str "Token expired: " msg))
+        {:status ::token-expired :msg msg}))
     (catch InvalidClaimException e
-      {:status ::claim-invalid :msg (.getMessage e)})
+      (let [msg (.getMessage e)]
+        (log/warn (str "Token claims invalid: " msg))
+        {:status ::claim-invalid :msg msg}))
     (catch JWTVerificationException e
-      {:status ::token-invalid :msg (.getMessage e)})))
+      (let [msg (.getMessage e)]
+        (log/warn (str "Token not verified: " msg))
+        {:status ::token-invalid :msg msg}))))
