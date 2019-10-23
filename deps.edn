@@ -7,7 +7,8 @@
   martian {:mvn/version "0.1.10"}
   martian-clj-http {:mvn/version "0.1.10"}
   org.clojure/clojure {:mvn/version "1.10.1"}
-  ring/ring-codec {:mvn/version "1.1.2"}}
+  ring/ring-codec {:mvn/version "1.1.2"}
+  org.clojure/tools.logging {:mvn/version "0.5.0"}}
 
  :mvn/repos
  {"swirrl-jars-releases" {:url "s3p://swirrl-jars/releases/"}
