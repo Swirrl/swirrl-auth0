@@ -18,7 +18,7 @@
       (String.  "UTF-8")
       (json/parse-string keyword)))
 
-(defn verify-token [jwk iss aud jwt] ;; throws if not verified
+(defn verify-token [jwk iss aud leeway jwt] ;; throws if not verified
   (try
     (let [key (pub-key jwk jwt)
           alg (Algorithm/RSA256 key nil)
@@ -29,6 +29,7 @@
                   ;; Ensure aud is correct
                   (.acceptExpiresAt 0)
                   ;; Ensure token not expired
+                  (.acceptLeeway leeway)
                   (.build))
           tok (.verify ver jwt)]
       {:status ::token-verified
