@@ -11,8 +11,8 @@
   org.clojure/tools.logging {:mvn/version "0.5.0"}}
 
  :mvn/repos
- {"swirrl-jars-releases" {:url "s3p://swirrl-jars/releases/"}
-  "swirrl-jars-snapshots" {:url "s3p://swirrl-jars/snapshots/"}}
+ {"swirrl-jars-releases" {:url "s3://swirrl-jars/releases/"}
+  "swirrl-jars-snapshots" {:url "s3://swirrl-jars/snapshots/"}}
 
  :aliases
  {:dev {:extra-deps {aero {:mvn/version "1.1.3"}
