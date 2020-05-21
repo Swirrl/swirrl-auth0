@@ -10,6 +10,7 @@
   {"get": {"operationId": "authorize",
            "summary": "Get an auth-code from auth0",
            "parameters": [{"name": "response_type", "in": "query", "type": "string"},
+                          {"name": "response_mode", "in": "query", "type": "string", "required": false},
                           {"name": "client_id", "in": "query", "type": "string"},
                           {"name": "redirect_uri", "in": "query", "type": "string"},
                           {"name": "audience", "in": "query", "type": "string", "required": false},

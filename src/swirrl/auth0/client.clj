@@ -26,7 +26,9 @@
 (defn client [endpoint swagger {:as opts}]
   (-> endpoint
       (martian/bootstrap-swagger swagger {:interceptors default-interceptors})
-      (->Auth0Client (assoc opts :client-id-token (atom nil)))))
+      (->Auth0Client (assoc opts
+                            :client-id-token (atom nil)
+                            :leeway (get opts :leeway 0)))))
 
 (defn intercept
   {:style/indent :defn}
@@ -55,15 +57,17 @@
                              :audience aud})
       (:body)))
 
-(defn login-uri [auth0 state & {:keys [prompt]}]
+(defn login-uri
+  [auth0 state & {:keys [prompt redirect-uri response-type response-mode scope]}]
   (-> {:state state
        :client_id (:client-id auth0)
        :protocol "oauth2"
-       :response_type "code"
-       :redirect_uri (:redirect-uri auth0)
+       :response_type (or response-type "code")
+       :redirect_uri (or redirect-uri (:redirect-uri auth0))
        :audience (:aud auth0)
-       :scope "openid profile email"}
+       :scope (or scope "openid profile email")}
       (cond-> prompt (assoc :prompt prompt))
+      (cond-> response-mode (assoc :response_mode response-mode))
       (form-encode)
       (->> (str (martian/url-for auth0 :authorize) \?))))
 

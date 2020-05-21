@@ -47,3 +47,6 @@
       (let [msg (.getMessage e)]
         (log/warn (str "Token not verified: " msg))
         {:status ::token-invalid :msg msg}))))
+
+(defn verified? [jwk iss aud leeway jwt]
+  (-> (verify-token jwk iss aud leeway jwt) :status (= ::token-verified)))
