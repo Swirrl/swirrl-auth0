@@ -216,7 +216,7 @@ curl -i \
 
    I've read that Hooks will supersede rules, but there is not a hook extension
    point that is the same as rules at the moment.
-   
+
 #+BEGIN_SRC javascript
 
 // add-user-info-to-access-token rule
@@ -390,7 +390,7 @@ kind of access they have.
 
 *** Muttnik: Regular web application
     This is the web application, meaning anything that a user interacts with
-    using a web browser. 
+    using a web browser.
     When a logged-in user makes a request that requires backend APIs the user's
     access-token is used to gain access to the API.
 
@@ -399,12 +399,32 @@ kind of access they have.
 
     Needs access to PMD API with appropriate permissions.
 
+**** Redirect URIs / Allowed Callback URLs
+     The way information gets back from Auth0 to the application is via Auth0
+     redirecting back to the application. There are a couple of ways it can do
+     this, either a ~303~ redirect to a URI, and the information is included in
+     a query parameter (auth code), or it can ~POST~ to a URI (implicit with
+     form_post). For either case, these URIs *must* be pre-configured in Auth0
+     (under "Allowed Callback URLs"), and then sent in the first auth request.
+
+     Currently muttnik needs two separate endpoints configured, for every
+     domain the application is hosted at:
+
+     - http://localhost:3000/auth/callback
+     - http://localhost:3000/tools/sparql
+
+     The first is for the regular login flow, and ~/auth/callback~ is where the
+     authentication handler is located.
+
+     The second is for the implicit client flow, used by the SPARQL editor
+     javascript component.
+
 *** Client: machine-to-machine application
-    Every client which wants to access one or more API (e.g. an external clojure app which calls drafter) 
+    Every client which wants to access one or more API (e.g. an external clojure app which calls drafter)
     must have their own machine-to-machine application.
 
     Needs access to PMD API with appropriate permissions.
-    
+
 *** Drafter: machine-to-machine application
     The application for ~drafter~ needs access to the domain's Management API endpoint, with the ~read:users~ permission
     for looking up non-logged-in users' roles/permissions. It doesn't need its own permissions against the `PMD` api.
@@ -417,9 +437,9 @@ kind of access they have.
 *** PMD
     We have one "logical" API (in Auth0) that represents all of our backend
     services.
-    
-[[./PMD-api-settings.png]]    
-    
+
+[[./PMD-api-settings.png]]
+
 
     We need to do this because:
 
@@ -476,7 +496,7 @@ kind of access they have.
      - ~muttnik:manager~
      - ~drafter:editor~
      - ~drafter:publisher~
-     
+
 [[./PMD-api-permissions.png]]
 
 ** Hooks
