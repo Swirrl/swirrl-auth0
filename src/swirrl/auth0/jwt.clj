@@ -5,7 +5,7 @@
            [com.auth0.jwt.exceptions InvalidClaimException
             JWTVerificationException TokenExpiredException]
            com.auth0.jwt.JWT
-           java.util.Base64))
+           [org.apache.commons.codec.binary Base64]))
 
 (defn decode [jwt]
   (.decodeJwt (JWT.) jwt))
@@ -13,9 +13,14 @@
 (defn pub-key [jwk jwt]
   (-> jwk (.get (.getKeyId (decode jwt))) .getPublicKey))
 
-(defn decode-part [s]
-  (-> (.decode (Base64/getDecoder) s)
-      (String.  "UTF-8")
+(defn decode-part
+  "Decodes a JWT part and returns parsed JSON"
+  [s]
+  ;;NOTE: This uses the commons-codec Base64 class instead of
+  ;;java.util.base64. This is for consistency with the method the
+  ;;Auth0 JWT library uses to decode token parts.
+  (-> (Base64/decodeBase64 s)
+      (String. "UTF-8")
       (json/parse-string keyword)))
 
 (defn verify-token [jwk iss aud leeway jwt] ;; throws if not verified
@@ -31,7 +36,7 @@
                   ;; Ensure token not expired
                   (.acceptLeeway leeway)
                   (.build))
-          tok (.verify ver jwt)]
+          tok (.verify ver jwt)]      
       {:status ::token-verified
        :header (-> tok .getHeader decode-part)
        :payload (-> tok .getPayload decode-part)})
