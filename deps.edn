@@ -8,7 +8,9 @@
   martian-clj-http/martian-clj-http {:mvn/version "0.1.10"}
   org.clojure/clojure {:mvn/version "1.10.1"}
   ring/ring-codec {:mvn/version "1.1.2"}
-  org.clojure/tools.logging {:mvn/version "0.5.0"}}
+  org.clojure/tools.logging {:mvn/version "0.5.0"}
+  clj-time/clj-time {:mvn/version "0.14.0"} ;; NOTE this dep is only required because of swirrl.auth0.mock
+  }
 
  :mvn/repos
  {"swirrl-jars-releases" {:url "s3://swirrl-jars/releases/"}
