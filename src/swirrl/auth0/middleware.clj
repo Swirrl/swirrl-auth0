@@ -44,30 +44,36 @@
         (assoc :swirrl.auth0/id-token token)))
     request))
 
-(defmethod ig/init-key :swirrl.auth0.middleware/bearer-token
-  [_ {{:keys [aud iss leeway] :or {leeway 0}} :auth0 :keys [auth0 jwk] :as opts}]
-  (fn [handler]
-    (fn [request]
-      (let [token (parse-header request "Bearer")]
-        (handler (access-token-request request token jwk iss aud leeway))))))
+(defn wrap-bearer-token [handler {{:keys [aud iss leeway] :or {leeway 0}} :auth0 :keys [auth0 jwk] :as opts}]
+  (fn [request]
+    (let [token (parse-header request "Bearer")]
+      (handler (access-token-request request token jwk iss aud leeway)))))
 
-(defmethod ig/init-key :swirrl.auth0.middleware/session-token
-  [_ {{:keys [iss aud leeway client-id] :or {leeway 0}} :auth0 :keys [jwk]}]
-  (fn [handler]
-    (fn [{{{:keys [access_token id_token]} :auth0} :session :as request}]
-      (-> request
-          (access-token-request access_token jwk iss aud leeway)
-          (id-token-request id_token jwk iss client-id leeway)
-          (handler)))))
+(defmethod ig/init-key :swirrl.auth0.middleware/bearer-token [_ opts]
+  #(wrap-bearer-token % opts))
+
+(defn wrap-session-token [handler {{:keys [iss aud leeway client-id] :or {leeway 0}} :auth0 :keys [jwk]}]
+  (fn [{{{:keys [access_token id_token]} :auth0} :session :as request}]
+    (-> request
+        (access-token-request access_token jwk iss aud leeway)
+        (id-token-request id_token jwk iss client-id leeway)
+        (handler))))
+
+(defmethod ig/init-key :swirrl.auth0.middleware/session-token [_ opts]
+  #(wrap-session-token % opts))
+
+(defn wrap-normalize-roles [handler {:keys [role-reader] :as opts}]
+  (fn [request]
+    (handler (update request :swirrl.auth0/access-token normalize-roles role-reader))))
 
 (defmethod ig/init-key :swirrl.auth0.middleware/normalize-roles
-  [_ {:keys [role-reader] :as opts}]
-  (fn [handler]
-    (fn [request]
-      (handler (update request :swirrl.auth0/access-token normalize-roles role-reader)))))
+  [_ opts]
+  #(wrap-normalize-roles % opts))
+
+(defn wrap-dev-token [handler opts]
+  (fn [request]
+    (handler (merge request opts))))
 
 (defmethod ig/init-key :swirrl.auth0.middleware/dev-token
   [_ opts]
-  (fn [handler]
-    (fn [request]
-      (handler (merge request opts)))))
+  #(wrap-dev-token % opts))
