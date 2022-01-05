@@ -22,6 +22,6 @@
 
   :test {:extra-paths ["test"]}
 
-  :doc {:extra-deps {ring/ring {:mvn/version "1.7.1"}}
+  :doc {:extra-deps {ring/ring {:mvn/version "1.9.4"}}
         :extra-paths ["doc"]
         :main-opts ["-m server"]}}}
