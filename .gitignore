@@ -1,0 +1,17 @@
+.DS_Store
+.idea
+/*.iml
+/.nrepl-port
+/.dir-locals.el
+.cpcache
+/.envrc
+.clj-kondo/.cache
+.rebel_readline_history
+tmp
+env/dev/output-data/*
+/out
+.#*
+.projectile
+.calva
+*~
+.lsp
