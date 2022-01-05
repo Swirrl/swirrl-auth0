@@ -12,7 +12,7 @@
                  :endpoint (env :auth0-domain)
                  :client-id (env :auth0-client-id)
                  :client-secret (env :auth0-client-secret)
-                 :audience (env :auth0-aud)}
+                 :aud (env :auth0-aud)}
                 :swirrl.auth0/jwk
                 {:endpoint (env :auth0-domain)}}]
     (ig/init config (keys config))))
@@ -46,7 +46,8 @@
                    :endpoint (env :auth0-domain)
                    :client-id (env :auth0-client-id)
                    :client-secret (env :auth0-client-secret)
-                   :audience "https://dev-kkt-m758.eu.auth0.com/api/v2/"}
+                   :api "https://dev-kkt-m758.eu.auth0.com/api/v2/"
+                   :aud "https://dev-kkt-m758.eu.auth0.com/api/v2/"}
                   :swirrl.auth0/jwk
                   {:endpoint (env :auth0-domain)}}
           sys (ig/init config [:swirrl.auth0/client])
