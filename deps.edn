@@ -9,7 +9,7 @@
   org.clojure/clojure {:mvn/version "1.10.3"}
   ring/ring-codec {:mvn/version "1.2.0"}
   org.clojure/tools.logging {:mvn/version "1.2.4"}
-  clj-time/clj-time {:mvn/version "0.14.0"} ;; NOTE this dep is only required because of swirrl.auth0.mock
+  clj-time/clj-time {:mvn/version "0.15.2"} ;; NOTE this dep is only required because of swirrl.auth0.mock
   }
 
  :mvn/repos
@@ -23,8 +23,7 @@
                      lambdaisland/kaocha {:mvn/version "1.60.977"}}}
 
   :test {:extra-paths ["test"]
-         :extra-deps {clj-time/clj-time {:mvn/version "0.15.2"}
-                      lambdaisland/kaocha {:mvn/version "1.60.977"}}}
+         :extra-deps {lambdaisland/kaocha {:mvn/version "1.60.977"}}}
 
   :kaocha {:jvm-opts ["-Dclojure.main.report=stderr"
                       "-Dclojure.core.async.go-checking=true"]}
