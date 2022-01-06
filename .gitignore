@@ -16,3 +16,4 @@ env/dev/output-data/*
 *~
 .lsp
 /target/
+/.test-results/

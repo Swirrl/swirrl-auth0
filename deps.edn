@@ -17,16 +17,15 @@
   "swirrl-jars-snapshots" {:url "s3://swirrl-jars/snapshots/"}}
 
  :aliases
- {:dev {:extra-deps {aero/aero {:mvn/version "1.1.6"}
-                     environ/environ {:mvn/version "1.2.0"}
+ {:dev {:extra-paths ["test"]
+        :jvm-opts ["-Dclojure.main.report=stderr"
+                    "-Dclojure.core.async.go-checking=true"]
+        :main-opts ["-m" "kaocha.runner"]
+        :extra-deps {aero/aero {:mvn/version "1.1.6"}
                      integrant/repl {:mvn/version "0.3.2"}
-                     lambdaisland/kaocha {:mvn/version "1.60.977"}}}
-
-  :test {:extra-paths ["test"]
-         :extra-deps {lambdaisland/kaocha {:mvn/version "1.60.977"}}}
-
-  :kaocha {:jvm-opts ["-Dclojure.main.report=stderr"
-                      "-Dclojure.core.async.go-checking=true"]}
+                     lambdaisland/kaocha {:mvn/version "1.60.977"}
+                     lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
+                     environ/environ {:mvn/version "1.2.0"}}}
 
   :doc {:extra-deps {ring/ring {:mvn/version "1.9.4"}}
         :extra-paths ["doc"]
