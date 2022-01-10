@@ -26,6 +26,6 @@
   :kaocha {:jvm-opts ["-Dclojure.main.report=stderr"
                       "-Dclojure.core.async.go-checking=true"]}
 
-  :doc {:extra-deps {ring/ring {:mvn/version "1.7.1"}}
+  :doc {:extra-deps {ring/ring {:mvn/version "1.9.4"}}
         :extra-paths ["doc"]
         :main-opts ["-m server"]}}}
