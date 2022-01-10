@@ -17,7 +17,7 @@
  :aliases
  {:dev {:extra-deps {aero/aero {:mvn/version "1.1.6"}
                      environ/environ {:mvn/version "1.2.0"}
-                     integrant/repl {:mvn/version "0.3.1"}}}
+                     integrant/repl {:mvn/version "0.3.2"}}}
 
   :test {:extra-paths ["test"]
          :extra-deps {clj-time/clj-time {:mvn/version "0.15.2"}
