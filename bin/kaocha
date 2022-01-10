@@ -2,4 +2,4 @@
 
 set -o errexit
 
-clojure -A:test:dev:kaocha -m kaocha.runner "$@"
+clojure -M:dev "$@"

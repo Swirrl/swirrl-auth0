@@ -1,7 +1,9 @@
 #kaocha/v1
-{:tests [{:id          :unit
-          :test-paths  ["test" "src"]
-          :ns-patterns [".*"]}]
- :reporter [kaocha.report/documentation]
- :capture-output? true
- }
+ {:tests [{:id :unit
+           :test-paths ["test"]
+           :source-paths ["src"]}]
+  :plugins [:kaocha.plugin/profiling :kaocha.plugin/junit-xml]
+  :kaocha.plugin.junit-xml/target-file ".test-results/kaocha/results.xml"
+  :reporter [kaocha.report/documentation]
+
+  }
