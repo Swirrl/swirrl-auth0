@@ -18,6 +18,11 @@ jobs:
       - run:
           name: "Test"
           command: "./bin/kaocha"
+          environment:
+            - AUTH0_DOMAIN: https://dev-kkt-m758.eu.auth0.com
+            - AUTH0_CLIENT_ID: rP6sBtate52nxTs5KIHH8pcGInMBGh8a
+            - AUTH0_AUD: https://dev-kkt-m758.eu.auth0.com/api/v2/
+
       - store_test_results:
           path: test-results
 
@@ -31,4 +36,4 @@ workflows:
       - test:
           context:
             - swirrl-dockerhub-consumer
-            - swirrl-auth0-dev-tennant # creds for our auth0 dev setup
+            - swirrl-auth0-auth0-dev-creds # creds for our auth0 dev setup
