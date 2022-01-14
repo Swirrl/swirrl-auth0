@@ -1,0 +1,11 @@
+export AUTH0_DOMAIN="https://dev-kkt-m758.eu.auth0.com"
+export AUTH0_CLIENT_ID="rP6sBtate52nxTs5KIHH8pcGInMBGh8a"
+
+# Swirrlers can find the secret for the above client in the auth0
+# dashboard here:
+#
+#    https://manage.auth0.com/dashboard/eu/dev-kkt-m758/applications/rP6sBtate52nxTs5KIHH8pcGInMBGh8a/settings
+#
+# Or in 1password under the swirrl-auth0-auth0-dev-creds item.
+#
+export AUTH0_CLIENT_SECRET="INSERT_SECRET_HERE"
