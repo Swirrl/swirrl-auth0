@@ -27,6 +27,6 @@
                      lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                      environ/environ {:mvn/version "1.2.0"}}}
 
-  :doc {:extra-deps {ring/ring {:mvn/version "1.9.4"}}
+  :doc {:extra-deps {ring/ring {:mvn/version "1.9.5"}}
         :extra-paths ["doc"]
         :main-opts ["-m server"]}}}
