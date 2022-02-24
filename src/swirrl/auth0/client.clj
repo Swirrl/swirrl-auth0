@@ -106,7 +106,7 @@
 (def unexceptional?
   (set/union #{401 403} unexceptional-status?))
 
-(defn api
+(defn ^:deprecated api
   ([auth0 route-name]
    (api auth0 route-name {}))
   ([auth0 route-name params]
