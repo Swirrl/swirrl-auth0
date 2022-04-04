@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
 
  :deps
- {com.auth0/java-jwt {:mvn/version "3.18.2"}
+ {com.auth0/java-jwt {:mvn/version "3.19.1"}
   com.auth0/jwks-rsa {:mvn/version "0.20.0"}
   integrant/integrant {:mvn/version "0.8.0"}
   com.github.oliyh/martian {:mvn/version "0.1.18"}
