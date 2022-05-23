@@ -2,7 +2,7 @@
 
  :deps
  {com.auth0/java-jwt {:mvn/version "3.19.2"}
-  com.auth0/jwks-rsa {:mvn/version "0.20.0"}
+  com.auth0/jwks-rsa {:mvn/version "0.21.1"}
   integrant/integrant {:mvn/version "0.8.0"}
   com.github.oliyh/martian {:mvn/version "0.1.18"}
   com.github.oliyh/martian-clj-http {:mvn/version "0.1.18"}
