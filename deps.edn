@@ -4,8 +4,8 @@
  {com.auth0/java-jwt {:mvn/version "4.0.0"}
   com.auth0/jwks-rsa {:mvn/version "0.21.1"}
   integrant/integrant {:mvn/version "0.8.0"}
-  com.github.oliyh/martian {:mvn/version "0.1.18"}
-  com.github.oliyh/martian-clj-http {:mvn/version "0.1.18"}
+  com.github.oliyh/martian {:mvn/version "0.1.21"}
+  com.github.oliyh/martian-clj-http {:mvn/version "0.1.21"}
   org.clojure/clojure {:mvn/version "1.10.3"}
   ring/ring-codec {:mvn/version "1.2.0"}
   org.clojure/tools.logging {:mvn/version "1.2.4"}
