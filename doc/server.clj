@@ -12,7 +12,7 @@
            java.util.concurrent.TimeUnit))
 
 (def domain "https://dev-kkt-m758.eu.auth0.com/")
-(def client-id "7klE25HUY333vTEx7rM1dmsnO6vHkaSG")
+(def client-id (System/getenv "AUTH0_APP_CLIENT_ID"))
 (def client-secret (System/getenv "AUTH0_CLIENT_SECRET"))
 (def redirect-uri "http://localhost:3000/auth/callback")
 (def audience "https://pmd")
