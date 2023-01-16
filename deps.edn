@@ -23,7 +23,7 @@
         :main-opts ["-m" "kaocha.runner"]
         :extra-deps {aero/aero {:mvn/version "1.1.6"}
                      integrant/repl {:mvn/version "0.3.2"}
-                     lambdaisland/kaocha {:mvn/version "1.71.1119"}
+                     lambdaisland/kaocha {:mvn/version "1.72.1136"}
                      lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
                      environ/environ {:mvn/version "1.2.0"}}}
 
