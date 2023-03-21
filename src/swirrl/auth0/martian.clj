@@ -34,9 +34,17 @@
   {:name ::unexceptional
    :enter (fn [ctx] (assoc-in ctx [:request :unexceptional-status] pred))})
 
+(def cookie-policy
+  "The default cookie policy doesn't handle some of the response cookies
+  and spams warnings in the logs, so we use :standard one. This is a
+  clj-http option."
+  {:name ::cookie-policy
+   :enter (fn [ctx] (assoc-in ctx [:request :cookie-policy] :standard))})
+
 (def default-interceptors
   (conj martian/default-interceptors
         never-coerce-response-body
         (interceptors/encode-body default-encoders)
         (interceptors/coerce-response default-encoders)
+        cookie-policy
         martian-http/perform-request))
