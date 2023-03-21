@@ -1,6 +1,8 @@
 (ns swirrl.auth0.client
   (:require [cheshire.core :as json]
             [clj-http.client :refer [unexceptional-status?]]
+            [clj-time.core :as time]
+            [clj-time.coerce :as time.coerce]
             [clojure.set :as set]
             [clojure.walk :as walk]
             [integrant.core :as ig]
@@ -44,7 +46,18 @@
                              :client-id (:client-id auth0)
                              :client-secret (:client-secret auth0)
                              :audience (:aud auth0)})
-      (:body)))
+      (:body)
+      (vary-meta assoc :timestamp (time/now))))
+
+(defn client-id-token-expiry-time
+  "Takses auth0 client and returns clj-time/date-time or nil.
+  The returned date-time marks the instant the token expires."
+  [auth0]
+  (let [{expires-in :expires_in :as token} (some-> auth0 :client-id-token deref)
+        updated-at (or (-> token meta :timestamp)
+                       (time/now))]
+    (when expires-in
+      (time/plus updated-at (time/seconds expires-in)))))
 
 (defn get-auth-code-token [auth0 auth-code aud]
   (-> auth0
