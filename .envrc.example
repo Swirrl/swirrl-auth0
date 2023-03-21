@@ -1,5 +1,6 @@
 export AUTH0_DOMAIN="https://dev-kkt-m758.eu.auth0.com"
 export AUTH0_CLIENT_ID="rP6sBtate52nxTs5KIHH8pcGInMBGh8a"
+export AUTH0_AUD="https://pmd"
 
 # Swirrlers can find the secret for the above client in the auth0
 # dashboard here:
