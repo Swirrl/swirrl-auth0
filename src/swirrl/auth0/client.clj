@@ -50,7 +50,7 @@
       (vary-meta assoc :timestamp (time/now))))
 
 (defn client-id-token-expiry-time
-  "Takses auth0 client and returns clj-time/date-time or nil.
+  "Takes auth0 client and returns clj-time/date-time or nil.
   The returned date-time marks the instant the token expires."
   [auth0]
   (let [{expires-in :expires_in :as token} (some-> auth0 :client-id-token deref)
