@@ -2,7 +2,6 @@
   (:require [cheshire.core :as json]
             [clj-http.client :refer [unexceptional-status?]]
             [clj-time.core :as time]
-            [clj-time.coerce :as time.coerce]
             [clojure.set :as set]
             [clojure.walk :as walk]
             [integrant.core :as ig]
