@@ -2,12 +2,14 @@
   "Most access tokens expire and need to be refreshed. This namespace
   lets us schedule a periodic refresh.
 
+  See [[default-id-token-opts]] for options you can pass from config.
+
   The refrehs relies on the value returned by
   `swirrl.auth0.client/client-id-expiry-token`"
   (:require [clj-time.core :as time]
             [clojure.tools.logging :as log]
             [integrant.core :as ig]
-            [swirrl.auth0.client :as auth0 :refer [nonce]])
+            [swirrl.auth0.client :as auth0])
   (:import [java.util.concurrent
             RejectedExecutionException
             ThreadFactory 
@@ -33,7 +35,7 @@
   (try
     (auth0/set-client-id-token! auth0)
     (catch Exception ex
-      (throw (ex-info "Failed to refresh token" {:tag ::refresh-failed}))))
+      (throw (ex-info "Failed to refresh token" {:tag ::refresh-failed} ex))))
   (if-let [t (auth0/client-id-token-expiry-time auth0)]
     t
     (throw (ex-info "No expiry time token" {:tag ::no-expiry-time}))))
@@ -89,5 +91,5 @@
     
     exec))
 
-(defmethod ig/halt-key! :swirrl.auth0.refresher/id-token [kw executor]
+(defmethod ig/halt-key! :swirrl.auth0.refresher/id-token [_ executor]
   (.shutdown executor))
