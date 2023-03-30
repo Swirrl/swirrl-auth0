@@ -3,7 +3,6 @@
             [clj-http.client :refer [unexceptional-status?]]
             [clj-time.core :as time]
             [clojure.set :as set]
-            [clojure.walk :as walk]
             [integrant.core :as ig]
             [martian.core :as martian]
             [ring.util.codec :refer [form-encode]]
