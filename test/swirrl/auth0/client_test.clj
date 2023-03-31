@@ -22,17 +22,22 @@
 (s/def ::expires_in integer?)
 (s/def ::token_type #{"Bearer"})
 (s/def ::client-id-token
-  (s/keys :req-un [::access_token ::scope ::expires_in ::token_type]))
+  (s/keys :req-un [::access_token ::expires_in ::token_type]))
 
 (deftest auth0-client-test
   (testing "Client instantiation"
     (let [sys (auth0-system)
           client (:swirrl.auth0/client sys)
-          jwk (:swirrl.auth0/jwk sys)]
-      (is (instance? swirrl.auth0.client.Auth0Client client))
+          jwk (:swirrl.auth0/jwk sys)]      (is (instance? swirrl.auth0.client.Auth0Client client))
       (is (instance? com.auth0.jwk.JwkProvider jwk))
       (let [token (sut/get-client-id-token client)]
-        (is (s/valid? ::client-id-token token))))))
+        (sut/client-id-token-expiry-time client)
+        (is (s/valid? ::client-id-token token))
+        (is (-> token meta :timestamp)))
+      
+      (testing "Client remembers last refresh time"
+        (sut/set-client-id-token! client)
+        (is (sut/client-id-token-expiry-time client))))))
 
 (s/def ::email string?)
 (s/def ::name string?)
