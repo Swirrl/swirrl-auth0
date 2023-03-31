@@ -33,7 +33,7 @@
   the following tags: ::refresh-failed, ::no-expiry-time."
   [auth0]
   (try
-    (auth0/set-client-id-token! auth0)
+    (auth0/set-client-id-token! (auth0/management-api-client auth0))
     (catch Exception ex
       (throw (ex-info "Failed to refresh token" {:tag ::refresh-failed} ex))))
   (if-let [t (auth0/client-id-token-expiry-time auth0)]
