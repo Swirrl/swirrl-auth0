@@ -38,7 +38,7 @@
       (throw (ex-info "Failed to refresh token" {:tag ::refresh-failed} ex))))
   (if-let [t (auth0/client-id-token-expiry-time auth0)]
     t
-    (throw (ex-info "No expiry time token" {:tag ::no-expiry-time}))))
+    (throw (ex-info "No expiry time" {:tag ::no-expiry-time}))))
 
 (def ^:private default-id-token-opts
   {:initial-delay-in-seconds 0 :retry-delay-in-seconds 30})
