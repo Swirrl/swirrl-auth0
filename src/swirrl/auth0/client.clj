@@ -100,13 +100,16 @@
      :session {:state state}}))
 
 (defn set-client-id-token! [auth0]
+  ;; (assert (= (:api auth0) (:aud (:opts auth0))) 
+  ;;         (str "Wrong audience. Most likely the Auth0 management API should be the audience here. "
+  ;;              "Passed: " (:aud (:opts auth0))))
   (reset! (:client-id-token auth0) (get-client-id-token auth0))
   auth0)
 
 (defn client-id-token? [auth0]
   (-> auth0 :client-id-token deref boolean))
 
-(defn with-client-id-token [auth0]
+(defn- with-client-id-token [auth0]
   (when-not (client-id-token? auth0)
     (set-client-id-token! auth0))
   (intercept auth0 (bearer-token (:access_token @(:client-id-token auth0)))))
@@ -118,6 +121,7 @@
   (set/union #{401 403} unexceptional-status?))
 
 (defn ^:deprecated api
+  "See [[management-api]]."
   ([auth0 route-name]
    (api auth0 route-name {}))
   ([auth0 route-name params]
@@ -134,6 +138,22 @@
            api-client (->Auth0Client (:martian auth0) api-opts)]
        (call api-client 1)))))
 
+(defn management-api-client
+  "Returns an Auth0 client instance set up to for management API calls."
+  [auth0]
+  (let [{:keys [martian opts]} auth0]
+    (->Auth0Client martian (assoc opts :aud (:api auth0)))))
+
+(defn management-api
+  "Calls the auth0 API and returns response body on success.
+
+  Note: the auth0 client should already be authenticated
+  with API (See [[client-id-token?]])."
+  [auth0 route-name params]
+  (-> (management-api-client auth0)
+      (with-client-id-token)
+      (martian/response-for route-name params)
+      :body))
 
 (defmethod ig/init-key :swirrl.auth0/client
   [_ {:keys [endpoint swagger-json] :as opts}]
