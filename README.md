@@ -16,4 +16,4 @@ com.swirrl/auth0 {:git/url "git@github.com:Swirrl/swirrl-auth0"
 
 Licensed under the Eclipse Public License 2.0
 
-Copyright (C) 2023 TPXimpact
+Copyright (C) 2023 TPXimpact Data Ltd.
