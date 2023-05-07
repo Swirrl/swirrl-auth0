@@ -1,8 +1,8 @@
 {:paths ["src" "resources"]
 
  :deps
- {com.auth0/java-jwt {:mvn/version "4.2.1"}
-  com.auth0/jwks-rsa {:mvn/version "0.21.2"}
+ {com.auth0/java-jwt {:mvn/version "4.3.0"}
+  com.auth0/jwks-rsa {:mvn/version "0.22.0"}
   integrant/integrant {:mvn/version "0.8.0"}
   com.github.oliyh/martian {:mvn/version "0.1.22"}
   com.github.oliyh/martian-clj-http {:mvn/version "0.1.22"}
@@ -23,7 +23,7 @@
         :main-opts ["-m" "kaocha.runner"]
         :extra-deps {aero/aero {:mvn/version "1.1.6"}
                      integrant/repl {:mvn/version "0.3.2"}
-                     lambdaisland/kaocha {:mvn/version "1.71.1119"}
+                     lambdaisland/kaocha {:mvn/version "1.80.1274"}
                      lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
                      environ/environ {:mvn/version "1.2.0"}}}
 
