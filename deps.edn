@@ -6,7 +6,7 @@
   integrant/integrant {:mvn/version "0.8.1"}
   com.github.oliyh/martian {:mvn/version "0.1.26"}
   com.github.oliyh/martian-clj-http {:mvn/version "0.1.26"}
-  org.clojure/clojure {:mvn/version "1.11.1"}
+  org.clojure/clojure {:mvn/version "1.11.2"}
   ring/ring-codec {:mvn/version "1.2.0"}
   org.clojure/tools.logging {:mvn/version "1.2.4"}
   clj-time/clj-time {:mvn/version "0.15.2"} ;; NOTE this dep is only required because of swirrl.auth0.mock
